@@ -1,4 +1,4 @@
-#' Extract first matched group from a string
+#' Extract first matched group from a string.
 #'
 #' @param string input character vector
 #' @param pattern with groups
@@ -9,8 +9,11 @@ str_match <- function(string, pattern) {
   # Locate complete match
   matches <- str_extract(string, pattern)
   
+  # Figure out how many groups there are
+  tmp <- str_replace(pattern, "\\\\\\(", "")
+  n <- str_length(str_replace(tmp, "[^(]", ""))
+
   # Break match into capture groups
-  n <- str_length(str_replace(pattern, "[^(]", ""))
   pattern <- str_join(".*?", pattern, ".*")
   replace <- str_join("\\", seq_len(n), collapse = "\u001E")
   
@@ -23,7 +26,7 @@ str_match <- function(string, pattern) {
   match_matrix
 }
 
-#' Extract all matched groups from a string
+#' Extract all matched groups from a string.
 #'
 #' @param string input character vector
 #' @param pattern with groups
