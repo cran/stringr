@@ -14,11 +14,15 @@ check_string <- function(string) {
 
 #' Check that pattern is of the correct type for stringr functions
 #'
-#' @param string input vector
+#' @param pattern input vector
 #' @keywords internal 
-check_pattern <- function(pattern) {
-  if (!is.character(pattern) || length(pattern) != 1) 
-    stop("Pattern must be character vector of length one", call. = FALSE)
+check_pattern <- function(pattern, string, replacement = NULL) {
+  if (!is.character(pattern)) 
+    stop("Pattern must be a character vector", call. = FALSE)
   
+  if (!recyclable(string, pattern, replacement)) {
+    stop("Lengths of string and pattern not compatible")
+  }
+
   pattern
 }

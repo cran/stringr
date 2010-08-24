@@ -30,16 +30,21 @@ test_that("specifying only start subsets to end", {
   expect_that(str_sub(alphabet, 24), equals(c("xyz")))  
 })
 
-test_that("specifying Inf as end selects entire string", {
+test_that("specifying -1 as end selects entire string", {
   expect_that(
-    str_sub("ABCDEF", c(4, 5), c(5, Inf)),
+    str_sub("ABCDEF", c(4, 5), c(5, -1)),
     equals(c("DE", "EF"))
   ) 
   
   expect_that(
-    str_sub("ABCDEF", c(4, 5), c(Inf, Inf)),
+    str_sub("ABCDEF", c(4, 5), c(-1, -1)),
     equals(c("DEF", "EF"))
   )
+})
+
+test_that("negative values select from end", {
+  expect_that(str_sub("ABCDEF", 1, -4), equals("ABC"))
+  expect_that(str_sub("ABCDEF", -3), equals("DEF"))
 })
 
 test_that("missing arguments give missing results", {
@@ -49,5 +54,22 @@ test_that("missing arguments give missing results", {
   
   expect_that(str_sub("test", NA, NA), equals(NA_character_))
   expect_that(str_sub(c(NA, "test"), NA, NA), equals(rep(NA_character_, 2)))
+  
+})
+
+test_that("replacement works", {
+  x <- "BBCDEF"
+  str_sub(x, 1, 1) <- "A"
+  expect_that(x, equals("ABCDEF"))
+  
+  str_sub(x, -1, -1) <- "K"
+  expect_that(x, equals("ABCDEK"))  
+  
+  str_sub(x, -2, -1) <- "EFGH"
+  expect_that(x, equals("ABCDEFGH"))  
+
+  str_sub(x, 2, -2) <- ""
+  expect_that(x, equals("AH"))
+  
   
 })

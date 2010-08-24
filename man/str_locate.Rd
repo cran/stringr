@@ -8,10 +8,10 @@
 }
 
 \details{
-  Vectorised over \code{string}.  \code{pattern} should be a single
-  pattern, i.e. a character vector of length one.
+  Vectorised over \code{string} and \code{pattern}, shorter is recycled
+  to same length as longest.
 }
-\value{numeric matrix.  First column gives start postion of match, and
+\value{integer matrix.  First column gives start postion of match, and
 second column gives end position.}
 \keyword{character}
 \seealso{\code{\link{regexpr}} which this function wraps
@@ -25,4 +25,5 @@ description.}
 }
 \examples{fruit <- c("apple", "banana", "pear", "pinapple")
 str_locate(fruit, "a")
-str_locate(fruit, "e")}
+str_locate(fruit, "e")
+str_locate(fruit, c("a", "b", "p", "p"))}

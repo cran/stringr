@@ -1,10 +1,10 @@
-\name{str_replace}
-\alias{str_replace}
-\title{Replace first occurrence of a matched pattern in a string.}
-\usage{str_replace(string, pattern, replacement)}
+\name{str_replace_all}
+\alias{str_replace_all}
+\title{Replace all occurrences of a matched pattern in a string.}
+\usage{str_replace_all(string, pattern, replacement)}
 
 \description{
-  Replace first occurrence of a matched pattern in a string.
+  Replace all occurrences of a matched pattern in a string.
 }
 
 \details{
@@ -13,8 +13,8 @@
 }
 \value{character vector.}
 \keyword{character}
-\seealso{\code{\link{sub}} which this function wraps, 
-\code{\link{str_replace_all}} to replace all matches}
+\seealso{\code{\link{gsub}} which this function wraps, 
+\code{\link{str_replace_all}} to replace a single match}
 \arguments{
   \item{string}{input character vector}
   \item{pattern}{pattern to look for, as defined by a POSIX regular
@@ -28,7 +28,7 @@ group (created by \code{()}) within the pattern.}
 str_replace(fruits, "[aeiou]", "-")
 str_replace_all(fruits, "[aeiou]", "-")
 
-str_replace(fruits, "([aeiou])", "")
-str_replace(fruits, "([aeiou])", "\\\\1\\\\1")
-str_replace(fruits, "[aeiou]", c("1", "2", "3"))
-str_replace(fruits, c("a", "e", "i"), "-")}
+str_replace_all(fruits, "([aeiou])", "")
+str_replace_all(fruits, "([aeiou])", "\\\\1\\\\1")
+str_replace_all(fruits, "[aeiou]", c("1", "2", "3"))
+str_replace_all(fruits, c("a", "e", "i"), "-")}
