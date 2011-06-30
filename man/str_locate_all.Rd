@@ -4,12 +4,16 @@
 \usage{str_locate_all(string, pattern)}
 
 \description{
-  Locate the position of all occurences of a pattern in a string.
+  Locate the position of all occurences of a pattern in a
+  string.
 }
 
 \details{
-  Vectorised over \code{string} and \code{pattern}, shorter is recycled
-  to same length as longest.
+  Vectorised over \code{string} and \code{pattern}, shorter
+  is recycled to same length as longest.
+
+  If the match is of length 0, (e.g. from a special match
+  like \code{$}) end will be one character less than start.
 }
 \keyword{character}
 \value{list of integer matrices.  First column gives start postion of

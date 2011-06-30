@@ -1,7 +1,7 @@
 \name{str_trim}
 \alias{str_trim}
 \title{Trim whitespace from start and end of string.}
-\usage{str_trim(string, side="both")}
+\usage{str_trim(string, side = "both")}
 
 \description{
   Trim whitespace from start and end of string.

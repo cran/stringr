@@ -1,15 +1,15 @@
 \name{str_split}
 \alias{str_split}
 \title{Split up a string into a variable number of pieces.}
-\usage{str_split(string, pattern, n=Inf)}
+\usage{str_split(string, pattern, n = Inf)}
 
 \description{
   Split up a string into a variable number of pieces.
 }
 
 \details{
-  Vectorised over \code{string}.  \code{pattern} should be a single
-  pattern, i.e. a character vector of length one.
+  Vectorised over \code{string}.  \code{pattern} should be
+  a single pattern, i.e. a character vector of length one.
 }
 \value{a list of character vectors.}
 \keyword{character}

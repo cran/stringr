@@ -1,3 +1,24 @@
+stringr 0.5
+===========
+
+* new `str_wrap` function which gives `strwrap` output in a more convenient
+  format
+
+* new `word` function extract words from a string given user defined
+  separator (thanks to suggestion by David Cooper)
+
+* `str_locate` now returns consistent type when matching empty string (thanks
+  to Stavros Macrakis)
+
+* new `str_count` counts number of matches in a string.
+
+* `str_pad` and `str_trim` receive performance tweaks - for large vectors this
+  should give at least a two order of magnitude speed up
+
+* str_length returns NA for invalid multibyte strings
+
+* fix small bug in internal `recyclable` function
+
 stringr 0.4
 ===========
 

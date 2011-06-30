@@ -1,15 +1,15 @@
 \name{str_pad}
 \alias{str_pad}
 \title{Pad a string.}
-\usage{str_pad(string, width, side="left", pad=" ")}
+\usage{str_pad(string, width, side = "left", pad = " ")}
 
 \description{
   Pad a string.
 }
 
 \details{
-  Vectorised over \code{string}.  All other inputs should be of length
-  1.
+  Vectorised over \code{string}.  All other inputs should
+  be of length 1.
 }
 \value{character vector}
 \seealso{\code{\link{str_trim}} to remove whitespace}
