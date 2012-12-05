@@ -7,11 +7,11 @@
 #' @return integer matrix.  First column gives start postion of match, and
 #'   second column gives end position.
 #' @keywords character
-#' @seealso 
+#' @seealso
 #'   \code{\link{regexpr}} which this function wraps
-#' 
+#'
 #'   \code{\link{str_extract}} for a convenient way of extracting matches
-#  
+#
 #'   \code{\link{str_locate_all}} to locate position of all matches
 #'
 #' @export
@@ -29,7 +29,9 @@ str_locate <- function(string, pattern) {
     match_to_matrix(results)
   } else {
     results <- re_mapply("regexpr", string, pattern)
-    laply(results, match_to_matrix)
+    out <- t(vapply(results, match_to_matrix, integer(2)))
+    colnames(out) <- c("start", "end")
+    out
   }
 }
 
@@ -51,7 +53,7 @@ str_locate <- function(string, pattern) {
 #'  \code{\link{str_extract}} for a convenient way of extracting matches
 #'
 #'  \code{\link{str_locate}} to locate position of first match
-#' 
+#'
 #' @export
 #' @examples
 #' fruit <- c("apple", "banana", "pear", "pineapple")
@@ -65,10 +67,10 @@ str_locate_all <- function(string, pattern) {
   if (length(pattern) == 1) {
     matches <- re_call("gregexpr", string, pattern)
   } else {
-    matches <- unlist(re_mapply("gregexpr", string, pattern), 
+    matches <- unlist(re_mapply("gregexpr", string, pattern),
       recursive = FALSE)
   }
-  llply(matches, match_to_matrix, global = TRUE)
+  lapply(matches, match_to_matrix, global = TRUE)
 }
 
 # Convert annoying regexpr format to something more useful
@@ -76,14 +78,14 @@ match_to_matrix <- function(match, global = FALSE) {
   if (global && length(match) == 1 && (is.na(match) || match == -1)) {
     null <- matrix(0, nrow = 0, ncol = 2)
     colnames(null) <- c("start", "end")
-    
+
     return(null)
   }
-  
+
   start <- as.vector(match)
   start[start == -1] <- NA
   end <- start + attr(match, "match.length") - 1L
-  
+
   cbind(start = start, end = end)
 }
 
@@ -100,7 +102,7 @@ match_to_matrix <- function(match, global = FALSE) {
 #' numbers <- "1 and 2 and 4 and 456"
 #' num_loc <- str_locate_all(numbers, "[0-9]+")[[1]]
 #' str_sub(numbers, num_loc[, "start"], num_loc[, "end"])
-#' 
+#'
 #' text_loc <- invert_match(num_loc)
 #' str_sub(numbers, text_loc[, "start"], text_loc[, "end"])
 invert_match <- function(loc) {
