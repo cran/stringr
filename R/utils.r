@@ -1,1 +1,9 @@
-compact <- function(l) Filter(Negate(is.null), l)
+#' Pipe operator
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+NULL

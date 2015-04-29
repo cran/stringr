@@ -1,92 +1,60 @@
-#' Locate the position of the first occurence of a pattern in a string.
+#' Locate the position of patterns in a string.
 #'
-#' Vectorised over \code{string} and \code{pattern}, shorter is recycled to
-#' same length as longest.
-#'
-#' @inheritParams str_detect
-#' @return integer matrix.  First column gives start postion of match, and
-#'   second column gives end position.
-#' @keywords character
-#' @seealso
-#'   \code{\link{regexpr}} which this function wraps
-#'
-#'   \code{\link{str_extract}} for a convenient way of extracting matches
-#
-#'   \code{\link{str_locate_all}} to locate position of all matches
-#'
-#' @export
-#' @examples
-#' fruit <- c("apple", "banana", "pear", "pinapple")
-#' str_locate(fruit, "a")
-#' str_locate(fruit, "e")
-#' str_locate(fruit, c("a", "b", "p", "p"))
-str_locate <- function(string, pattern) {
-  string <- check_string(string)
-  pattern <- check_pattern(pattern, string)
-
-  if (length(pattern) == 1) {
-    results <- re_call("regexpr", string, pattern)
-    match_to_matrix(results)
-  } else {
-    results <- re_mapply("regexpr", string, pattern)
-    out <- t(vapply(results, match_to_matrix, integer(2)))
-    colnames(out) <- c("start", "end")
-    out
-  }
-}
-
-#' Locate the position of all occurences of a pattern in a string.
-#'
-#' Vectorised over \code{string} and \code{pattern}, shorter is recycled to
-#' same length as longest.
-#'
-#' If the match is of length 0, (e.g. from a special match like \code{$})
-#' end will be one character less than start.
+#' Vectorised over \code{string} and \code{pattern}. If the match is of length
+#' 0, (e.g. from a special match like \code{$}) end will be one character less
+#' than start.
 #'
 #' @inheritParams str_detect
-#' @keywords character
-#' @return list of integer matrices.  First column gives start postion of
-#'   match, and second column gives end position.
+#' @return For \code{str_locate}, an integer matrix. First column gives start
+#'   postion of match, and second column gives end position. For
+#'   \code{str_locate_all} a list of integer matrices.
 #' @seealso
-#'  \code{\link{regexpr}} which this function wraps
-#'
-#'  \code{\link{str_extract}} for a convenient way of extracting matches
-#'
-#'  \code{\link{str_locate}} to locate position of first match
-#'
+#'   \code{\link{str_extract}} for a convenient way of extracting matches,
+#'   \code{\link[stringi]{stri_locate}} for the underlying implementation.
 #' @export
 #' @examples
 #' fruit <- c("apple", "banana", "pear", "pineapple")
+#' str_locate(fruit, "$")
+#' str_locate(fruit, "a")
+#' str_locate(fruit, "e")
+#' str_locate(fruit, c("a", "b", "p", "p"))
+#'
 #' str_locate_all(fruit, "a")
 #' str_locate_all(fruit, "e")
 #' str_locate_all(fruit, c("a", "b", "p", "p"))
-str_locate_all <- function(string, pattern) {
-  string <- check_string(string)
-  pattern <- check_pattern(pattern, string)
-
-  if (length(pattern) == 1) {
-    matches <- re_call("gregexpr", string, pattern)
-  } else {
-    matches <- unlist(re_mapply("gregexpr", string, pattern),
-      recursive = FALSE)
-  }
-  lapply(matches, match_to_matrix, global = TRUE)
+#'
+#' # Find location of every character
+#' str_locate_all(fruit, "")
+str_locate <- function(string, pattern) {
+  switch(type(pattern),
+    empty = stri_locate_first_boundaries(string,
+      opts_brkiter = stri_opts_brkiter("character")),
+    bound = stri_locate_first_boundaries(string,
+      opts_brkiter = attr(pattern, "options")),
+    fixed = stri_locate_first_fixed(string, pattern,
+      opts_fixed = attr(pattern, "options")),
+    coll  = stri_locate_first_coll(string, pattern,
+      opts_collator = attr(pattern, "options")),
+    regex = stri_locate_first_regex(string, pattern,
+      opts_regex = attr(pattern, "options"))
+  )
 }
 
-# Convert annoying regexpr format to something more useful
-match_to_matrix <- function(match, global = FALSE) {
-  if (global && length(match) == 1 && (is.na(match) || match == -1)) {
-    null <- matrix(0, nrow = 0, ncol = 2)
-    colnames(null) <- c("start", "end")
-
-    return(null)
-  }
-
-  start <- as.vector(match)
-  start[start == -1] <- NA
-  end <- start + attr(match, "match.length") - 1L
-
-  cbind(start = start, end = end)
+#' @rdname str_locate
+#' @export
+str_locate_all <- function(string, pattern) {
+  switch(type(pattern),
+    empty = stri_locate_all_boundaries(string, omit_no_match = TRUE,
+      opts_brkiter = stri_opts_brkiter("character")),
+    bound = stri_locate_all_boundaries(string, omit_no_match = TRUE,
+      opts_brkiter = attr(pattern, "options")),
+    fixed = stri_locate_all_fixed(string, pattern, omit_no_match = TRUE,
+      opts_fixed = attr(pattern, "options")),
+    regex = stri_locate_all_regex(string, pattern,
+      omit_no_match = TRUE, opts_regex = attr(pattern, "options")),
+    coll  = stri_locate_all_coll(string, pattern,
+      omit_no_match = TRUE, opts_collator = attr(pattern, "options"))
+  )
 }
 
 

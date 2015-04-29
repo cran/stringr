@@ -10,12 +10,8 @@ phones <- str_c(
   num[, 7], num[, 8], num[, 9], num[, 10])
 
 test_that("special case are correct", {
-  # These tests really should compare to character matrices, but str_match
-  # returns matrices with dimnames set it's real pain
-  expect_that(c(str_match(NA, "(a)")),
-    equals(c(NA_character_, NA_character_)))
-  expect_that(c(str_match(character(), "(a)")),
-    equals(character()))
+  expect_equal(str_match(NA, "(a)"), matrix(NA_character_))
+  expect_equal(str_match(character(), "(a)"), matrix(character(), 0, 1))
 })
 
 test_that("no matching cases returns 1 column matrix", {
@@ -39,7 +35,7 @@ test_that("single match works when all match", {
   expect_that(matches_flat, equals(num_flat))
 })
 
-test_that("single match works when some don't match", {
+test_that("match returns NA when some inputs don't match", {
   matches <- str_match(c(phones, "blah", NA),
     "\\(([0-9]{3})\\) ([0-9]{3}) ([0-9]{4})")
 
@@ -48,6 +44,10 @@ test_that("single match works when some don't match", {
 
   expect_that(matches[11, ], equals(rep(NA_character_, 4)))
   expect_that(matches[12, ], equals(rep(NA_character_, 4)))
+})
+
+test_that("match returns NA when optional group doesn't match", {
+  expect_equal(str_match(c("ab", "a"), "(a)(b)?")[,3], c("b", NA))
 })
 
 test_that("multiple match works", {
