@@ -39,17 +39,15 @@
 #' str_replace_all(str_c(fruits, collapse = "---"),
 #'  c("one" = 1, "two" = 2, "three" = 3))
 str_replace <- function(string, pattern, replacement) {
-  replacement <- fix_replacement(replacement)
-
   switch(type(pattern),
     empty = ,
     bound = stop("Not implemented", call. = FALSE),
     fixed = stri_replace_first_fixed(string, pattern, replacement,
-      opts_fixed = attr(pattern, "options")),
+      opts_fixed = opts(pattern)),
     coll  = stri_replace_first_coll(string, pattern, replacement,
-      opts_collator = attr(pattern, "options")),
-    regex = stri_replace_first_regex(string, pattern, replacement,
-      opts_regex = attr(pattern, "options")),
+      opts_collator = opts(pattern)),
+    regex = stri_replace_first_regex(string, pattern, fix_replacement(replacement),
+      opts_regex = opts(pattern))
   )
 }
 
@@ -57,29 +55,65 @@ str_replace <- function(string, pattern, replacement) {
 #' @rdname str_replace
 str_replace_all <- function(string, pattern, replacement) {
   if (!is.null(names(pattern))) {
+    vec <- FALSE
     replacement <- unname(pattern)
     pattern <- names(pattern)
-    vec <- FALSE
   } else {
     vec <- TRUE
   }
-  replacement <- fix_replacement(replacement)
 
   switch(type(pattern),
     empty = ,
     bound = stop("Not implemented", call. = FALSE),
     fixed = stri_replace_all_fixed(string, pattern, replacement,
-      vectorize_all = vec, opts_fixed = attr(pattern, "options")),
+      vectorize_all = vec, opts_fixed = opts(pattern)),
     coll  = stri_replace_all_coll(string, pattern, replacement,
-      vectorize_all = vec, opts_collator = attr(pattern, "options")),
-    regex = stri_replace_all_regex(string, pattern, replacement,
-      vectorize_all = vec, opts_regex = attr(pattern, "options"))
+      vectorize_all = vec, opts_collator = opts(pattern)),
+    regex = stri_replace_all_regex(string, pattern, fix_replacement(replacement),
+      vectorize_all = vec, opts_regex = opts(pattern))
   )
 }
 
 fix_replacement <- function(x) {
-  stri_replace_all_regex(x, c("\\$", "\\\\(\\d)"), c("\\\\$", "\\$$1"),
-    vectorize_all = FALSE)
+  vapply(x, fix_replacement_one, character(1), USE.NAMES = FALSE)
+}
+
+fix_replacement_one <- function(x) {
+  escape_dollar <- function(x) if (x == "$") "\\$" else x
+
+  chars <- str_split(x, "")[[1]]
+  out <- character(length(chars))
+  escaped <- logical(length(chars))
+
+  in_escape <- FALSE
+  for (i in seq_along(chars)) {
+    escaped[[i]] <- in_escape
+    char <- chars[[i]]
+
+    if (in_escape) {
+      # Escape character not printed previously so must include here
+      if (char == "$") {
+        out[[i]] <- "\\\\$"
+      } else if (char >= "0" && char <= "9") {
+        out[[i]] <- paste0("$", char)
+      } else {
+        out[[i]] <- paste0("\\", char)
+      }
+
+      in_escape <- FALSE
+    } else {
+      if (char == "$") {
+        out[[i]] <- "\\$"
+      } else if (char == "\\") {
+        in_escape <- TRUE
+      } else {
+        out[[i]] <- char
+      }
+    }
+  }
+
+  # tibble::tibble(chars, out, escaped)
+  paste0(out, collapse = "")
 }
 
 
@@ -88,7 +122,7 @@ fix_replacement <- function(x) {
 #' @inheritParams str_replace
 #' @export
 #' @examples
-#' str_replace_na(c("NA", "abc", "def"))
+#' str_replace_na(c(NA, "abc", "def"))
 str_replace_na <- function(string, replacement = "NA") {
   stri_replace_na(string, replacement)
 }
