@@ -3,22 +3,29 @@
 #' Vectorised over \code{string}, \code{pattern} and \code{replacement}.
 #'
 #' @inheritParams str_detect
-#' @param pattern,replacement Supply separate pattern and replacement strings
-#'   to vectorise over the patterns. References of the form \code{\1},
-#'   \code{\2} will be replaced with the contents of the respective matched
-#'   group (created by \code{()}) within the pattern.
+#' @param replacement A character vector of replacements. Should be either
+#'   length one, or the same length as \code{string} or \code{pattern}.
+#'   References of the form \code{\1}, \code{\2}, etc will be replaced with
+#'   the contents of the respective matched group (created by \code{()}).
 #'
-#'   For \code{str_replace_all} only, you can perform multiple patterns and
-#'   replacements to each string, by passing a named character to
-#'   \code{pattern}.
+#'   To perform multiple replacements in each element of \code{string},
+#'   pass a named vector (\code{c(pattern1 = replacement1)}) to
+#'   \code{str_replace_all}. Alternatively, pass a function to
+#'   \code{replacement}: it will be called once for each match and its
+#'   return value will be used to replace the match.
+#'
+#'   To replace the complete string with \code{NA}, use
+#'   \code{replacement = NA_character_}.
 #' @return A character vector.
-#' @seealso \code{str_replace_na} to turn missing values into "NA";
+#' @seealso \code{\link{str_replace_na}} to turn missing values into "NA";
 #'   \code{\link{stri_replace}} for the underlying implementation.
 #' @export
 #' @examples
 #' fruits <- c("one apple", "two pears", "three bananas")
 #' str_replace(fruits, "[aeiou]", "-")
 #' str_replace_all(fruits, "[aeiou]", "-")
+#' str_replace_all(fruits, "[aeiou]", toupper)
+#' str_replace_all(fruits, "b", NA_character_)
 #'
 #' str_replace(fruits, "([aeiou])", "")
 #' str_replace(fruits, "([aeiou])", "\\1\\1")
@@ -35,10 +42,29 @@
 #' str_replace_all(fruits, c("a", "e", "i"), "-")
 #'
 #' # If you want to apply multiple patterns and replacements to the same
-#' # string, pass a named version to pattern.
-#' str_replace_all(str_c(fruits, collapse = "---"),
-#'  c("one" = 1, "two" = 2, "three" = 3))
+#' # string, pass a named vector to pattern.
+#' fruits %>%
+#'   str_c(collapse = "---") %>%
+#'   str_replace_all(c("one" = "1", "two" = "2", "three" = "3"))
+#'
+#' # Use a function for more sophisticated replacement. This example
+#' # replaces colour names with their hex values.
+#' colours <- str_c("\\b", colors(), "\\b", collapse="|")
+#' col2hex <- function(col) {
+#'   rgb <- col2rgb(col)
+#'   rgb(rgb["red", ], rgb["green", ], rgb["blue", ], max = 255)
+#' }
+#'
+#' x <- c(
+#'   "Roses are red, violets are blue",
+#'   "My favourite colour is green"
+#' )
+#' str_replace_all(x, colours, col2hex)
 str_replace <- function(string, pattern, replacement) {
+  if (!missing(replacement) && is.function(replacement)) {
+    return(str_transform(string, pattern, replacement))
+  }
+
   switch(type(pattern),
     empty = ,
     bound = stop("Not implemented", call. = FALSE),
@@ -54,6 +80,11 @@ str_replace <- function(string, pattern, replacement) {
 #' @export
 #' @rdname str_replace
 str_replace_all <- function(string, pattern, replacement) {
+  if (!missing(replacement) && is.function(replacement)) {
+    return(str_transform_all(string, pattern, replacement))
+  }
+
+
   if (!is.null(names(pattern))) {
     vec <- FALSE
     replacement <- unname(pattern)
@@ -75,11 +106,17 @@ str_replace_all <- function(string, pattern, replacement) {
 }
 
 fix_replacement <- function(x) {
+  if (!is.character(x)) {
+    stop("`replacement` must be a character vector", call. = FALSE)
+  }
+
   vapply(x, fix_replacement_one, character(1), USE.NAMES = FALSE)
 }
 
 fix_replacement_one <- function(x) {
-  escape_dollar <- function(x) if (x == "$") "\\$" else x
+  if (is.na(x)) {
+    return(x)
+  }
 
   chars <- str_split(x, "")[[1]]
   out <- character(length(chars))
@@ -120,9 +157,29 @@ fix_replacement_one <- function(x) {
 #' Turn NA into "NA"
 #'
 #' @inheritParams str_replace
+#' @param replacement A single string.
 #' @export
 #' @examples
 #' str_replace_na(c(NA, "abc", "def"))
 str_replace_na <- function(string, replacement = "NA") {
   stri_replace_na(string, replacement)
+}
+
+
+str_transform <- function(string, pattern, replacement) {
+  loc <- str_locate(string, pattern)
+  str_sub(string, loc) <- replacement(str_sub(string, loc))
+  string
+}
+str_transform_all <- function(string, pattern, replacement) {
+  locs <- str_locate_all(string, pattern)
+
+  for (i in seq_along(string)) {
+    for (j in rev(seq_len(nrow(locs[[i]])))) {
+      loc <- locs[[i]]
+      str_sub(string[[i]], loc[j, 1], loc[j, 2]) <- replacement(str_sub(string[[i]], loc[j, 1], loc[j, 2]))
+    }
+  }
+
+  string
 }
