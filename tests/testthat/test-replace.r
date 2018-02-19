@@ -48,6 +48,14 @@ test_that("replacement must be a string", {
   expect_equal(str_replace("xyz", "x", NA_character_), NA_character_)
 })
 
+test_that("can replace all types of NA values", {
+  expect_equal(str_replace_na(NA), "NA")
+  expect_equal(str_replace_na(NA_character_), "NA")
+  expect_equal(str_replace_na(NA_complex_), "NA")
+  expect_equal(str_replace_na(NA_integer_), "NA")
+  expect_equal(str_replace_na(NA_real_), "NA")
+})
+
 
 # functions ---------------------------------------------------------------
 
@@ -59,6 +67,10 @@ test_that("can supply replacement function", {
 test_that("replacement can be different length", {
   double <- function(x) str_dup(x, 2)
   expect_equal(str_replace_all("abc", "a|c", double), "aabcc")
+})
+
+test_that("replacement with NA works", {
+  expect_equal(str_replace("abc", "z", toupper), "abc")
 })
 
 # fix_replacement ---------------------------------------------------------
