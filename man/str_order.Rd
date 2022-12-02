@@ -2,8 +2,9 @@
 % Please edit documentation in R/sort.R
 \name{str_order}
 \alias{str_order}
+\alias{str_rank}
 \alias{str_sort}
-\title{Order or sort a character vector.}
+\title{Order, rank, or sort a character vector}
 \usage{
 str_order(
   x,
@@ -13,6 +14,8 @@ str_order(
   numeric = FALSE,
   ...
 )
+
+str_rank(x, locale = "en", numeric = FALSE, ...)
 
 str_sort(
   x,
@@ -32,26 +35,43 @@ lowest to highest; if \code{TRUE} sorts from highest to lowest.}
 \item{na_last}{Where should \code{NA} go? \code{TRUE} at the end,
 \code{FALSE} at the beginning, \code{NA} dropped.}
 
-\item{locale}{In which locale should the sorting occur? Defaults to
-the English. This ensures that code behaves the same way across
-platforms.}
+\item{locale}{Locale to use for comparisons. See
+\code{\link[stringi:stri_locale_list]{stringi::stri_locale_list()}} for all possible options.
+Defaults to "en" (English) to ensure that default behaviour is
+consistent across platforms.}
 
 \item{numeric}{If \code{TRUE}, will sort digits numerically, instead
 of as strings.}
 
-\item{...}{Other options used to control sorting order. Passed on to
+\item{...}{Other options used to control collation. Passed on to
 \code{\link[stringi:stri_opts_collator]{stringi::stri_opts_collator()}}.}
 }
+\value{
+A character vector the same length as \code{string}.
+}
 \description{
-Order or sort a character vector.
+\itemize{
+\item \code{str_sort()} returns the sorted vector.
+\item \code{str_order()} returns an integer vector that returns the desired
+order when used for subsetting, i.e. \code{x[str_order(x)]} is the same
+as \code{str_sort()}
+\item \code{str_rank()} returns the ranks of the values, i.e.
+\code{arrange(df, str_rank(x))} is the same as \code{str_sort(df$x)}.
+}
 }
 \examples{
-str_order(letters)
-str_sort(letters)
+x <- c("apple", "car", "happy", "char")
+str_sort(x)
 
-str_order(letters, locale = "haw")
-str_sort(letters, locale = "haw")
+str_order(x)
+x[str_order(x)]
 
+str_rank(x)
+
+# In Czech, ch is a digraph that sorts after h
+str_sort(x, locale = "cs")
+
+# Use numeric = TRUE to sort numbers in strings
 x <- c("100a10", "100a5", "2b", "2a")
 str_sort(x)
 str_sort(x, numeric = TRUE)

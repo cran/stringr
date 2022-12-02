@@ -3,11 +3,15 @@
 \name{str_view}
 \alias{str_view}
 \alias{str_view_all}
-\title{View HTML rendering of regular expression match.}
+\title{View strings and matches}
 \usage{
-str_view(string, pattern, match = NA)
-
-str_view_all(string, pattern, match = NA)
+str_view(
+  string,
+  pattern = NULL,
+  match = TRUE,
+  html = FALSE,
+  use_escapes = FALSE
+)
 }
 \arguments{
 \item{string}{Input vector. Either a character vector, or something
@@ -15,9 +19,9 @@ coercible to one.}
 
 \item{pattern}{Pattern to look for.
 
-The default interpretation is a regular expression, as described
-in \link[stringi:about_search_regex]{stringi::stringi-search-regex}. Control options with
-\code{\link[=regex]{regex()}}.
+The default interpretation is a regular expression, as described in
+\code{vignette("regular-expressions")}. Use \code{\link[=regex]{regex()}} for finer control of the
+matching behaviour.
 
 Match a fixed string (i.e. by comparing only bytes), using
 \code{\link[=fixed]{fixed()}}. This is fast, but approximate. Generally,
@@ -28,25 +32,56 @@ Match character, word, line and sentence boundaries with
 \code{\link[=boundary]{boundary()}}. An empty pattern, "", is equivalent to
 \code{boundary("character")}.}
 
-\item{match}{If \code{TRUE}, shows only strings that match the pattern.
-If \code{FALSE}, shows only the strings that don't match the pattern.
-Otherwise (the default, \code{NA}) displays both matches and non-matches.}
+\item{match}{If \code{pattern} is supplied, which elements should be shown?
+\itemize{
+\item \code{TRUE}, the default, shows only elements that match the pattern.
+\item \code{NA} shows all elements.
+\item \code{FALSE} shows only elements that don't match the pattern.
+}
+
+If \code{pattern} is not supplied, all elements are always shown.}
+
+\item{html}{Use HTML output? If \code{TRUE} will create an HTML widget; if \code{FALSE}
+will style using ANSI escapes. The default prefers ANSI escapes if
+available in the current terminal; you can override by setting
+\code{options(stringr.html = TRUE)}.}
+
+\item{use_escapes}{If \code{TRUE}, all non-ASCII characters will be rendered
+with unicode escapes. This is useful to see exactly what underlying
+values are stored in the string.}
 }
 \description{
-\code{str_view} shows the first match; \code{str_view_all} shows all
-the matches. To build regular expressions interactively, check out the
-\href{https://www.garrickadenbuie.com/project/regexplain/}{RegExplain RStudio addin}.
+\code{str_view()} is used to print the underlying representation of a string and
+to see how a \code{pattern} matches.
+
+Matches are surrounded by \verb{<>} and unusual whitespace (i.e. all whitespace
+apart from \code{" "} and \code{"\\n"}) are surrounded by \code{{}} and escaped. Where
+possible, matches and unusual whitespace are coloured blue and \code{NA}s red.
 }
 \examples{
-str_view(c("abc", "def", "fgh"), "[aeiou]")
-str_view(c("abc", "def", "fgh"), "^")
-str_view(c("abc", "def", "fgh"), "..")
+# Show special characters
+str_view(c("\"\\\\", "\\\\\\\\\\\\", "fgh", NA, "NA"))
 
-# Show all matches with str_view_all
-str_view_all(c("abc", "def", "fgh"), "d|e")
+# A non-breaking space looks like a regular space:
+nbsp <- "Hi\u00A0you"
+nbsp
+# But it doesn't behave like one:
+str_detect(nbsp, " ")
+# So str_view() brings it to your attention with a blue background
+str_view(nbsp)
 
-# Use match to control what is shown
-str_view(c("abc", "def", "fgh"), "d|e")
-str_view(c("abc", "def", "fgh"), "d|e", match = TRUE)
-str_view(c("abc", "def", "fgh"), "d|e", match = FALSE)
+# You can also use escapes to see all non-ASCII characters
+str_view(nbsp, use_escapes = TRUE)
+
+# Supply a pattern to see where it matches
+str_view(c("abc", "def", "fghi"), "[aeiou]")
+str_view(c("abc", "def", "fghi"), "^")
+str_view(c("abc", "def", "fghi"), "..")
+
+# By default, only matching strings will be shown
+str_view(c("abc", "def", "fghi"), "e")
+# but you can show all:
+str_view(c("abc", "def", "fghi"), "e", match = NA)
+# or just those that don't match:
+str_view(c("abc", "def", "fghi"), "e", match = FALSE)
 }

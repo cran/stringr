@@ -1,4 +1,9 @@
-#' String interpolation.
+#' String interpolation
+#'
+#' @description
+#' `r lifecycle::badge("superseded")`
+#'
+#' `str_interp()` is superseded in favour of [str_glue()].
 #'
 #' String interpolation is a useful way of specifying a character string which
 #' depends on values in a certain environment. It allows for string creation
@@ -49,9 +54,7 @@
 #'   "without breaking the ${max_char}-char barrier!"
 #' ))
 str_interp <- function(string, env = parent.frame()) {
-  if (!is.character(string)) {
-    stop("string argument is not character.", call. = FALSE)
-  }
+  check_character(string)
   string <- str_c(string, collapse = "")
 
   # Find expression placeholders

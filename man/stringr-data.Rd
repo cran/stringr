@@ -6,15 +6,9 @@
 \alias{sentences}
 \alias{fruit}
 \alias{words}
-\title{Sample character vectors for practicing string manipulations.}
+\title{Sample character vectors for practicing string manipulations}
 \format{
-A character vector.
-
-An object of class \code{character} of length 720.
-
-An object of class \code{character} of length 80.
-
-An object of class \code{character} of length 980.
+Character vectors.
 }
 \usage{
 sentences
@@ -24,7 +18,7 @@ fruit
 words
 }
 \description{
-\code{fruit} and \code{word} come from the \code{rcorpora} package
+\code{fruit} and \code{words} come from the \code{rcorpora} package
 written by Gabor Csardi; the data was collected by Darius Kazemi
 and made available at \url{https://github.com/dariusk/corpora}.
 \code{sentences} is a collection of "Harvard sentences" used for

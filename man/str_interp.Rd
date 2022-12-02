@@ -2,7 +2,7 @@
 % Please edit documentation in R/interp.R
 \name{str_interp}
 \alias{str_interp}
-\title{String interpolation.}
+\title{String interpolation}
 \usage{
 str_interp(string, env = parent.frame())
 }
@@ -16,6 +16,10 @@ a character vector will be collapsed into a single string.}
 An interpolated character string.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}
+
+\code{str_interp()} is superseded in favour of \code{\link[=str_glue]{str_glue()}}.
+
 String interpolation is a useful way of specifying a character string which
 depends on values in a certain environment. It allows for string creation
 which is easier to read and write when compared to using e.g.

@@ -1,12 +1,12 @@
-#' Sample character vectors for practicing string manipulations.
+#' Sample character vectors for practicing string manipulations
 #'
-#' `fruit` and `word` come from the `rcorpora` package
+#' `fruit` and `words` come from the `rcorpora` package
 #' written by Gabor Csardi; the data was collected by Darius Kazemi
 #' and made available at \url{https://github.com/dariusk/corpora}.
 #' `sentences` is a collection of "Harvard sentences" used for
 #' standardised testing of voice.
 #'
-#' @format A character vector.
+#' @format Character vectors.
 #' @name stringr-data
 #' @examples
 #' length(sentences)
@@ -20,10 +20,13 @@
 NULL
 
 #' @rdname stringr-data
+#' @format NULL
 "sentences"
 
 #' @rdname stringr-data
+#' @format NULL
 "fruit"
 
 #' @rdname stringr-data
+#' @format NULL
 "words"

@@ -1,8 +1,8 @@
-#' Specify the encoding of a string.
+#' Specify the encoding of a string
 #'
 #' This is a convenient way to override the current encoding of a string.
 #'
-#' @param string String to re-encode.
+#' @inheritParams str_detect
 #' @param encoding Name of encoding. See [stringi::stri_enc_list()]
 #'   for a complete list.
 #' @export
@@ -13,5 +13,7 @@
 #' str_conv(x, "ISO-8859-2") # Polish "a with ogonek"
 #' str_conv(x, "ISO-8859-1") # Plus-minus
 str_conv <- function(string, encoding) {
+  check_string(encoding)
+
   stri_conv(string, encoding, "UTF-8")
 }

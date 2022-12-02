@@ -1,9 +1,13 @@
-#' Truncate a character string.
+#' Truncate a string to maximum width
 #'
-#' @param string A character vector.
+#' Truncate a string to a fixed of characters, so that
+#' `str_length(str_trunc(x, n))` is always less than or equal to `n`.
+#'
+#' @inheritParams str_detect
 #' @param width Maximum width of string.
 #' @param side,ellipsis Location and content of ellipsis that indicates
 #'   content has been removed.
+#' @return A character vector the same length as `string`.
 #' @seealso [str_pad()] to increase the minimum width of a string.
 #' @export
 #' @examples
@@ -13,15 +17,20 @@
 #'   str_trunc(x, 20, "left"),
 #'   str_trunc(x, 20, "center")
 #' )
-#'
 str_trunc <- function(string, width, side = c("right", "left", "center"),
                       ellipsis = "...") {
-  side <- match.arg(side)
+  check_number_whole(width)
+  side <- arg_match(side)
+  check_string(ellipsis)
 
   too_long <- !is.na(string) & str_length(string) > width
   width... <- width - str_length(ellipsis)
 
-  if (width... < 0) stop("`width` is shorter than `ellipsis`", .call = FALSE)
+  if (width... < 0) {
+    cli::cli_abort(
+      "`width` ({width}) is shorter than `ellipsis` ({str_length(ellipsis)})."
+    )
+  }
 
   string[too_long] <- switch(side,
     right  = str_c(str_sub(string[too_long], 1, width...), ellipsis),
