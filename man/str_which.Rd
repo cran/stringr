@@ -25,13 +25,13 @@ Match character, word, line and sentence boundaries with
 \code{\link[=boundary]{boundary()}}. An empty pattern, "", is equivalent to
 \code{boundary("character")}.}
 
-\item{negate}{If \code{TRUE}, return non-matching elements.}
+\item{negate}{If \code{TRUE}, inverts the resulting boolean vector.}
 }
 \value{
 An integer vector, usually smaller than \code{string}.
 }
 \description{
-\code{str_subset()} returns the indices of\code{string} where there's at least
+\code{str_which()} returns the indices of \code{string} where there's at least
 one match to \code{pattern}. It's a wrapper around
 \code{which(str_detect(x, pattern))}, and is equivalent to \code{grep(pattern, x)}.
 }
