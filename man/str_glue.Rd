@@ -5,7 +5,7 @@
 \alias{str_glue_data}
 \title{Interpolation with glue}
 \usage{
-str_glue(..., .sep = "", .envir = parent.frame())
+str_glue(..., .sep = "", .envir = parent.frame(), .trim = TRUE)
 
 str_glue_data(.x, ..., .sep = "", .envir = parent.frame(), .na = "NA")
 }
@@ -21,6 +21,9 @@ For \code{glue_data()}, elements in \code{...} override the values in \code{.x}.
 \item{.envir}{[\code{environment}: \code{parent.frame()}]\cr Environment to evaluate each expression in. Expressions are
 evaluated from left to right. If \code{.x} is an environment, the expressions are
 evaluated in that environment and \code{.envir} is ignored. If \code{NULL} is passed, it is equivalent to \code{\link[=emptyenv]{emptyenv()}}.}
+
+\item{.trim}{[\code{logical(1)}: \sQuote{TRUE}]\cr Whether to trim the input
+template with \code{\link[glue:trim]{trim()}} or not.}
 
 \item{.x}{[\code{listish}]\cr An environment, list, or data frame used to lookup values.}
 
